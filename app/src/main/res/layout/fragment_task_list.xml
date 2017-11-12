@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_gradient">
+
+    <LinearLayout
+        android:id="@+id/llActionBarContainer"
+        android:layout_width="match_parent"
+        android:layout_height="?android:actionBarSize"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <TextView
+            android:id="@+id/tvName"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="0.98"
+            android:gravity="center"
+            android:text="@string/app_name"
+            android:textColor="@color/colorWhite"
+            android:textSize="24sp" />
+
+        <ImageView
+            android:id="@+id/ivSettings"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_settings" />
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/rvContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/llActionBarContainer">
+
+        <ProgressBar
+            android:id="@+id/progressbar"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:max="1800"
+            android:progress="800" />
+
+
+        <ImageView
+            android:id="@+id/ivStar"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_alignLeft="@+id/progressbar"
+            android:layout_alignStart="@+id/progressbar"
+            android:layout_marginLeft="5dp"
+            android:src="@drawable/star" />
+
+        <ImageView
+
+            android:id="@+id/ivCoins"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_alignRight="@+id/progressbar"
+            android:layout_marginRight="5dp"
+            android:src="@drawable/ic_coins" />
+
+
+        <TextView
+            android:id="@+id/tvCoins"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/progressbar"
+            android:layout_alignTop="@+id/progressbar"
+            android:layout_marginRight="5dp"
+            android:layout_toLeftOf="@id/ivCoins"
+            android:gravity="center"
+            android:text="400"
+            android:textAlignment="center"
+            android:textColor="@color/colorWhite"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/tvExp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/progressbar"
+            android:layout_alignTop="@+id/progressbar"
+            android:layout_toLeftOf="@id/tvCoins"
+            android:layout_toRightOf="@id/ivStar"
+            android:gravity="center"
+            android:text="800/1800"
+            android:textAlignment="center"
+            android:textColor="@color/colorWhite"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/tvLevel"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_alignLeft="@+id/progressbar"
+            android:layout_alignStart="@+id/progressbar"
+            android:layout_marginLeft="5dp"
+            android:gravity="center"
+            android:text="1"
+            android:textAlignment="center"
+            android:textColor="@color/progress_color"
+            android:textSize="25sp" />
+    </RelativeLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvTasks"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/rvContainer"
+        android:layout_gravity="center_horizontal"
+        android:paddingTop="5dp" />
+
+</RelativeLayout>
+
+
