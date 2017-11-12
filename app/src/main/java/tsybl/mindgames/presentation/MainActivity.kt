@@ -11,6 +11,7 @@ import ru.terrakok.cicerone.commands.Replace
 import tsybl.mindgames.Constants
 import tsybl.mindgames.MyApp
 import tsybl.mindgames.R
+import tsybl.mindgames.presentation.computation.ComputationFragment
 import tsybl.mindgames.presentation.taskList.TaskListFragment
 import javax.inject.Inject
 
@@ -47,7 +48,7 @@ class MainActivity : AppCompatActivity() {
         override fun createFragment(screenKey: String?, data: Any?): Fragment {
             when (screenKey) {
                 Constants.TASK_LIST_FRAGMENT -> return TaskListFragment.newInstance()
-                Constants.TASK_COMPUTATION_FRAGMENT -> return TaskListFragment.newInstance()
+                Constants.TASK_COMPUTATION_FRAGMENT -> return ComputationFragment.newInstance()
             }
 
             return TaskListFragment.newInstance()

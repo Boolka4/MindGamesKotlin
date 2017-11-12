@@ -9,16 +9,27 @@ import android.view.ViewGroup
 import android.widget.Toast
 import kotlinx.android.synthetic.main.fragment_task_list.*
 import ru.terrakok.cicerone.Router
+import tsybl.mindgames.Constants
+import tsybl.mindgames.MyApp
 import tsybl.mindgames.R
-import tsybl.mindgames.R.id.rvTasks
 import tsybl.mindgames.data.TasksRepository
 import tsybl.mindgames.data.remote.TasksRemoteRepository
 import tsybl.mindgames.entities.Task
+import tsybl.mindgames.presentation.BaseView
 import tsybl.mindgames.util.SchedulerProvider
+import javax.inject.Inject
 
-class TaskListFragment : Fragment(), TaskListContract.View {
+interface TaskListView : BaseView<TaskListPresenter> {
+    fun setLoadingIndicator(active: Boolean)
 
-    private lateinit var mPresenter: TaskListContract.Presenter;
+    fun showTasks(tasks: List<Task>)
+    fun showLoadingTasksError()
+}
+
+class TaskListFragment : Fragment(), TaskListView {
+
+
+    private lateinit var mPresenter: TaskListPresenter;
     private lateinit var tasksAdapter: TaskListAdapter
 
     companion object {
@@ -27,8 +38,8 @@ class TaskListFragment : Fragment(), TaskListContract.View {
         }
     }
 
-//    @Inject
-//    lateinit var router: Router
+    @Inject
+    lateinit var router: Router
 
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?) =
@@ -38,7 +49,8 @@ class TaskListFragment : Fragment(), TaskListContract.View {
         super.onViewCreated(view, savedInstanceState)
         initAdapter()
         initRecyclerView()
-        mPresenter = TaskListPresenter(TasksRepository(TasksRemoteRepository()), SchedulerProvider(), this)
+        MyApp.appComponent.inject(this)
+        mPresenter = TaskListPresenterImpl(TasksRepository(TasksRemoteRepository()), SchedulerProvider(), this)
     }
 
     override fun onStart() {
@@ -51,7 +63,7 @@ class TaskListFragment : Fragment(), TaskListContract.View {
         mPresenter.unsubscribe()
     }
 
-    override fun setPresenter(presenter: TaskListContract.Presenter) {
+    override fun setPresenter(presenter: TaskListPresenter) {
         mPresenter = presenter;
     }
 
@@ -73,7 +85,12 @@ class TaskListFragment : Fragment(), TaskListContract.View {
     }
 
     private fun initAdapter() {
-        tasksAdapter = TaskListAdapter(activity, {},{})
+        tasksAdapter = TaskListAdapter(activity, {
+
+            when (it) {
+                1 -> router.navigateTo(Constants.TASK_COMPUTATION_FRAGMENT)
+            }
+        }, {})
 
     }
 

@@ -9,4 +9,6 @@ import javax.inject.Singleton
 @Component(modules = arrayOf(NavigationModule::class))
 interface AppComponent {
     fun inject(activity: MainActivity)
+
+    fun inject(fragment: TaskListFragment)
 }

@@ -2,4 +2,31 @@
     <string name="app_name">MindGames</string>
 
     <string name="best">Best: %1$d</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="right">Right</string>
+    <string name="wrong">Wrong</string>
+    <string name="results">Results</string>
+    <string name="restart">Play again</string>
+    <string name="back_to_main_menu">Back to main menu</string>
+    <string name="notification_time">Time of notifications</string>
+    <string name="notification">Notifications</string>
+    <string name="dont_show">Don\'t show again</string>
+    <string name="default_time">19:00</string>
+    <string name="synchronize">synchronize</string>
+    <string name="activity_graph">Activity graph</string>
+    <string name="got_it">Got it</string>
+
+    <string name="color_rush_rules">ColorRush – tasks on logic, It is necessary to find the correspondence of the text on the left and the color on the right in the allotted time;</string>
+    <string name="computing_rules">Computing – tasks on arithmetic, It is necessary to specify whether the arithmetic expression is correctly composed;</string>
+    <string name="reaction_tap_rules">Reaction Tap – Tasks for reaction,It is necessary to do a click when changing the color on the screen;</string>
+    <string name="schulte_numbers_rules">tasks for attention, it is necessary to select all numbers in ascending order with the best speed;</string>
+    <string name="memory_rules">Memory – memory development tasks,It is necessary to find all pairs of cards on the screen;</string>
+    <string name="your_score">YOUR SCORE:   </string>
+    <string name="new_best_score">NEW BEST SCORE</string>
+    <string name="score">Score:</string>
+    <string name="reaction_results">Results:</string>
+    <string name="wait">Wait</string>
+    <string name="tap">tap</string>
+
 </resources>

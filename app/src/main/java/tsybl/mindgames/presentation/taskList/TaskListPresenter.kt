@@ -3,11 +3,16 @@ package tsybl.mindgames.presentation.taskList
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import tsybl.mindgames.data.TasksDataSource
+import tsybl.mindgames.presentation.BasePresenter
 import tsybl.mindgames.util.BaseSchedulerProvider
 
-class TaskListPresenter(private val tasksDataSource: TasksDataSource,
-                        private val schedulerProvider: BaseSchedulerProvider,
-                        private val mTaskListView: TaskListContract.View) : TaskListContract.Presenter {
+interface TaskListPresenter : BasePresenter {
+
+}
+
+class TaskListPresenterImpl(private val tasksDataSource: TasksDataSource,
+                            private val schedulerProvider: BaseSchedulerProvider,
+                            private val mTaskListView: TaskListView) : TaskListPresenter {
     private val mCompositeDisposable: CompositeDisposable
 
     init {
