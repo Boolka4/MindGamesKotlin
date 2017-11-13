@@ -10,16 +10,21 @@ import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.fragment_computing.*
 import tsybl.mindgames.R
-import tsybl.mindgames.entities.ComputingTask
+import tsybl.mindgames.data.ComputationRepository
 import tsybl.mindgames.entities.GameResult
 import tsybl.mindgames.presentation.BaseView
 import tsybl.mindgames.presentation.dialogs.FinishDialog
 import tsybl.mindgames.presentation.dialogs.StartGameDialog
-import java.util.*
+import tsybl.mindgames.util.SchedulerProvider
 
 interface ComputationView : BaseView<ComputationPresenter> {
-    fun startGame()
-    fun showTask(task: ComputingTask)
+    fun startGame(time: Long, tick: Long)
+    fun startTimer()
+    fun showTask(text: String)
+    fun showScoreCount(count: String)
+    fun setProgress(progressPosition: Int)
+    fun updateBackgroundAnimations(isRight: Boolean)
+    fun updateBestScoreVisibility(visibility: Boolean)
     fun endGame()
 }
 
@@ -32,13 +37,13 @@ class ComputationFragment : Fragment(), DialogInterface.OnDismissListener, Compu
         }
     }
 
+    private lateinit var mPresenter: ComputationPresenter;
     private lateinit var countDownTimer: CountDownTimer
-    private var progressPosition = 0
+
     private var isTaskRunning = false
     private lateinit var startDialog: StartGameDialog
-    private var record = 0
-    private var currentBestScore = 0
-    private lateinit var currentTask: ComputingTask
+
+
 //    @Inject
 //    lateinit var router: Router
 
@@ -51,104 +56,35 @@ class ComputationFragment : Fragment(), DialogInterface.OnDismissListener, Compu
 
         startDialog = StartGameDialog(activity)
         startDialog.setOnDismissListener(this)
-        currentTask = ComputingTask("qq", true, 1, 4, 6, 1, "qr")
+
         initViews()
-        startGame()
+        //  MyApp.appComponent.inject(this)
+        mPresenter = ComputationPresenterImpl(ComputationRepository(), SchedulerProvider(), this)
     }
 
     override fun onStart() {
         super.onStart()
-        //  mPresenter.subscribe()
+        mPresenter.subscribe()
     }
 
     override fun onStop() {
         super.onStop()
-        //   mPresenter.unsubscribe()
+        mPresenter.unsubscribe()
     }
 
     override fun onDismiss(dialog: DialogInterface?) {
-        countDownTimer.start()
-        updateData(currentTask)
+        mPresenter.onStartDialogDismiss()
     }
 
     override fun setPresenter(presenter: ComputationPresenter) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        mPresenter = presenter
     }
 
-    override fun showTask(task: ComputingTask) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun setProgress(progressPosition: Int) {
+        progressTime.progress = progressPosition
     }
 
-    //    override fun setPresenter(presenter: TaskListContract.Presenter) {
-//        mPresenter = presenter;
-//    }
-    override fun startGame() {
-        btnAnswerRight.isClickable = true
-        btnAnswerWrong.isClickable = true
-        tvQuestion.text = ""
-        tvQuestion.setBackgroundColor(ContextCompat.getColor(activity, R.color.colorAccent))
-        countDownTimer = object : CountDownTimer(16500, 25) {
-
-            override fun onTick(millisUntilFinished: Long) {
-                progressPosition++
-                progressTime.setProgress(progressPosition)
-
-            }
-
-            override fun onFinish() {
-                progressPosition++
-                progressTime.setProgress(progressPosition)
-                updateBackground(false)
-                endGame()
-            }
-        }
-        startDialog.show()
-        startDialog.start()
-        progressPosition = 0
-        record = 0
-        progressTime.setProgress(progressPosition)
-    }
-
-    override fun endGame() {
-        countDownTimer.cancel()
-        val isNewRecord = true
-        val result = GameResult(1, 4, 5, isNewRecord)
-        val finishDialog = FinishDialog(activity, result,
-                {
-
-                },
-                {
-                    startGame()
-                })
-        finishDialog.show()
-        finishDialog.init()
-
-
-    }
-
-    private fun initViews() {
-        btnAnswerRight.setOnClickListener {
-            setAnswer(currentTask.isRight)
-            updateData(currentTask)
-        }
-        btnAnswerWrong.setOnClickListener {
-            setAnswer(!currentTask.isRight)
-            updateData(currentTask)
-        }
-
-    }
-
-    private fun setAnswer(answer: Boolean) {
-        if (answer) {
-            updateBackground(true)
-            record++
-        } else {
-            updateBackground(false)
-            endGame()
-        }
-    }
-
-    private fun updateBackground(isRight: Boolean) {
+    override fun updateBackgroundAnimations(isRight: Boolean) {
         if (isRight) {
             if (!isTaskRunning) {
                 tvQuestion.setBackgroundColor(ContextCompat.getColor(activity, R.color.colorRight))
@@ -174,13 +110,70 @@ class ComputationFragment : Fragment(), DialogInterface.OnDismissListener, Compu
         }
     }
 
-    private fun updateData(task: ComputingTask) {
-        tvScoreCount.setText(record.toString())
-        ComputingTaskGenerator.generate(task, 1, Random())
-        tvQuestion.text = task.question
-        if (record > currentBestScore) {
-            ivBestScore.setVisibility(View.VISIBLE)
-        }
+    override fun showTask(text: String) {
+        tvQuestion.text = text
+
     }
 
+    override fun showScoreCount(count: String) {
+        tvScoreCount.text = count
+    }
+
+
+    override fun updateBestScoreVisibility(visibility: Boolean) {
+        ivBestScore.visibility = if (visibility) View.VISIBLE else View.INVISIBLE
+    }
+
+
+    override fun startGame(time: Long, tick: Long) {
+        btnAnswerRight.isClickable = true
+        btnAnswerWrong.isClickable = true
+        tvQuestion.text = ""
+        tvQuestion.setBackgroundColor(ContextCompat.getColor(activity, R.color.colorAccent))
+        countDownTimer = object : CountDownTimer(time, tick) {
+
+            override fun onTick(millisUntilFinished: Long) {
+                mPresenter.onTimerTick()
+            }
+
+            override fun onFinish() {
+                mPresenter.onTimerFinish()
+            }
+        }
+        startDialog.show()
+        startDialog.start()
+
+    }
+
+    override fun startTimer() {
+        countDownTimer.start()
+    }
+
+
+    override fun endGame() {
+        countDownTimer.cancel()
+        val isNewRecord = true
+        val result = GameResult(1, 4, 5, isNewRecord)
+        val finishDialog = FinishDialog(activity, result,
+                {
+                    mPresenter.onFinishDialogBackToMainMenu()
+                },
+                {
+                    mPresenter.onFinishDialogTryAgain()
+                })
+        finishDialog.show()
+        finishDialog.init()
+
+
+    }
+
+    private fun initViews() {
+        btnAnswerRight.setOnClickListener {
+            mPresenter.onBtnRightClick()
+        }
+        btnAnswerWrong.setOnClickListener {
+            mPresenter.onBtnWrongClick()
+        }
+
+    }
 }
