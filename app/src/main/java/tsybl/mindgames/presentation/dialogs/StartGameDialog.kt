@@ -3,7 +3,6 @@ package tsybl.mindgames.presentation.dialogs
 import android.app.Dialog
 import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import android.view.animation.AlphaAnimation
@@ -32,7 +31,7 @@ class StartGameDialog(context: Context) : Dialog(context, R.style.StartGameDialo
         }
         tv.text = count.toString()
         val animation = AlphaAnimation(1.0f, 0.0f)
-        animation.duration = 1000
+        animation.duration = 750
         animation.setAnimationListener(object : Animation.AnimationListener {
             override fun onAnimationStart(animation: Animation) {
 

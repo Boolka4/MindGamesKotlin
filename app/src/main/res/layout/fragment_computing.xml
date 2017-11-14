@@ -92,7 +92,7 @@
         android:layout_marginTop="62dp"
         android:text="" />
 
-    <TextView
+    <tsybl.mindgames.view.AnswerTextView
         android:id="@+id/tvQuestion"
         android:layout_width="match_parent"
         android:layout_height="40dp"
@@ -100,7 +100,7 @@
         android:layout_centerHorizontal="true"
         android:background="@color/colorAccent"
         android:gravity="center"
-        android:textAlignment="center"
         android:text="TextView"
+        android:textAlignment="center"
         android:textSize="20sp" />
 </RelativeLayout>

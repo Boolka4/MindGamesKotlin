@@ -33,7 +33,7 @@ class ComputationPresenterImpl(private val computingDataSource: ComputingDataSou
 
     init {
         computationView.setPresenter(this)
-        currentTask = ComputingTask("qq", true, 1, 4, 6, 1, "qr")
+        currentTask = ComputingTask("qq", true)
         mCompositeDisposable = CompositeDisposable()
     }
 

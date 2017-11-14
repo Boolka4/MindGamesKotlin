@@ -9,8 +9,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.fragment_computing.*
+import kotlinx.android.synthetic.main.fragment_computing.view.*
 import tsybl.mindgames.R
+import tsybl.mindgames.R.id.*
 import tsybl.mindgames.data.ComputationRepository
+import tsybl.mindgames.data.NumbersGenerator
 import tsybl.mindgames.entities.GameResult
 import tsybl.mindgames.presentation.BaseView
 import tsybl.mindgames.presentation.dialogs.FinishDialog
@@ -40,7 +43,6 @@ class ComputationFragment : Fragment(), DialogInterface.OnDismissListener, Compu
     private lateinit var mPresenter: ComputationPresenter;
     private lateinit var countDownTimer: CountDownTimer
 
-    private var isTaskRunning = false
     private lateinit var startDialog: StartGameDialog
 
 
@@ -59,7 +61,7 @@ class ComputationFragment : Fragment(), DialogInterface.OnDismissListener, Compu
 
         initViews()
         //  MyApp.appComponent.inject(this)
-        mPresenter = ComputationPresenterImpl(ComputationRepository(), SchedulerProvider(), this)
+        mPresenter = ComputationPresenterImpl(ComputationRepository(NumbersGenerator(1)), SchedulerProvider(), this)
     }
 
     override fun onStart() {
@@ -86,27 +88,9 @@ class ComputationFragment : Fragment(), DialogInterface.OnDismissListener, Compu
 
     override fun updateBackgroundAnimations(isRight: Boolean) {
         if (isRight) {
-            if (!isTaskRunning) {
-                tvQuestion.setBackgroundColor(ContextCompat.getColor(activity, R.color.colorRight))
-                Thread(Runnable {
-                    try {
-                        Thread.sleep(400)
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    } finally {
-                        activity.runOnUiThread({
-                            if (!isTaskRunning) {
-                                tvQuestion.setBackgroundColor(ContextCompat.getColor(activity, R.color.colorAccent))
-                            }
-                        })
-                    }
-                }).start()
-            }
+            tvQuestion.playRight()
         } else {
-            isTaskRunning = true
-            tvQuestion.setBackgroundColor(ContextCompat.getColor(activity, R.color.colorWrong))
-            btnAnswerRight.isClickable = false
-            btnAnswerWrong.isClickable = false
+            tvQuestion.playError()
         }
     }
 
@@ -152,6 +136,8 @@ class ComputationFragment : Fragment(), DialogInterface.OnDismissListener, Compu
 
     override fun endGame() {
         countDownTimer.cancel()
+        btnAnswerRight.isClickable = false
+        btnAnswerWrong.isClickable = false
         val isNewRecord = true
         val result = GameResult(1, 4, 5, isNewRecord)
         val finishDialog = FinishDialog(activity, result,
@@ -168,6 +154,7 @@ class ComputationFragment : Fragment(), DialogInterface.OnDismissListener, Compu
     }
 
     private fun initViews() {
+        tvQuestion.setColors(ContextCompat.getColor(activity, R.color.colorAccent), ContextCompat.getColor(activity, R.color.colorWrong), ContextCompat.getColor(activity, R.color.colorRight))
         btnAnswerRight.setOnClickListener {
             mPresenter.onBtnRightClick()
         }
