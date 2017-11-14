@@ -34,11 +34,18 @@ class ComputationRepository(private val numbersGenerator: NumbersGenerator) : Co
         val first = numbersGenerator.getAdditionFirstNumber(answer)
         val second = answer - first
         val answerArray = if (task.isRight) arrayOf(first, second, answer) else numbersGenerator.generateAdditionWrong(first, second, answer)
+        task.first = answerArray[0]
+        task.second = answerArray[1]
+        task.answer = answerArray[2]
+        task.type = ComputingType.ADDITION
         task.question = generateAnswerString(answerArray, ComputingType.ADDITION)
         return task
     }
 
-    private fun subtraction(task: ComputingTask, level: Int, random: Random) {}
+    private fun subtraction(task: ComputingTask) {
+
+
+    }
 
     private fun multiplication(task: ComputingTask): ComputingTask {
         task.isRight = numbersGenerator.isRightTask()
@@ -46,6 +53,10 @@ class ComputationRepository(private val numbersGenerator: NumbersGenerator) : Co
         val second = numbersGenerator.getMultiplicationTerm()
         val answer = first * second
         val answerArray = if (task.isRight) arrayOf(first, second, answer) else numbersGenerator.generateMultiplicationWrong(first, second, answer)
+        task.first = answerArray[0]
+        task.second = answerArray[1]
+        task.answer = answerArray[2]
+        task.type = ComputingType.MULTIPLICATION
         task.question = generateAnswerString(answerArray, ComputingType.MULTIPLICATION)
         return task
     }
@@ -72,7 +83,7 @@ class NumbersGenerator(private val level: Int) {
 
     fun getTaskType() = random.nextBoolean()
 
-    fun getAdditionAnswer() = random.nextInt(99) + 1
+    fun getAdditionAnswer() = random.nextInt(90 + level * 10) + 1
 
     fun getAdditionFirstNumber(answer: Int) = random.nextInt(answer - 1) + 1
 
@@ -80,18 +91,18 @@ class NumbersGenerator(private val level: Int) {
 
     fun generateAdditionWrong(vararg args: Int): Array<Int> {
         val position = random.nextInt(2)
-        args[position] = getNext(random, args[position], 10)
+        args[position] = getNext(random, args[position], 10 + level)
         return arrayOf(args[0], args[1], args[2])
     }
 
-    fun getMultiplicationTerm() = random.nextInt(9) + 1
+    fun getMultiplicationTerm() = random.nextInt(8 + level) + 1
 
     fun generateMultiplicationWrong(vararg args: Int): Array<Int> {
         val position = random.nextInt(2)
         if (position == 2)
             args[position] = getNext(random, args[position], 2)
         else
-            args[position] = getNext(random, args[position], 10)
+            args[position] = getNext(random, args[position], 4 + level)
         return arrayOf(args[0], args[1], args[2])
     }
 
