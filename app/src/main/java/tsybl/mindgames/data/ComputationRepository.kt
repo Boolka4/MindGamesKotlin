@@ -12,19 +12,15 @@ class ComputationRepository(private val numbersGenerator: NumbersGenerator) : Co
 
 
     private fun generate(task: ComputingTask): ComputingTask {
-        //        //int type = 1;
-        //        switch (type) {
-        //            case 1:
-        //                addition(task, level, random);
-        //                break;
-        //            case 2:
-        //                multiplication(task, level, random);
-        //                break;
-        //        }
-        return if (numbersGenerator.getTaskType())
-            multiplication(task)
-        else
-            addition(task)
+        return when (numbersGenerator.getTaskType()) {
+            0 -> addition(task)
+            1 -> multiplication(task)
+            2 -> division(task)
+            else -> {
+                addition(task)
+            }
+        }
+
 
     }
 
@@ -61,7 +57,23 @@ class ComputationRepository(private val numbersGenerator: NumbersGenerator) : Co
         return task
     }
 
-    private fun division(task: ComputingTask, level: Int, random: Random) {}
+    private fun division(task: ComputingTask): ComputingTask {
+        task.isRight = numbersGenerator.isRightTask()
+        val first = numbersGenerator.getMultiplicationTerm()
+        val second = numbersGenerator.getMultiplicationTerm()
+        val answer = first * second
+        val answerArray = if (task.isRight) arrayOf(first, second, answer) else numbersGenerator.generateMultiplicationWrong(first, second, answer)
+        val tmp = answerArray[2]
+        answerArray[2] = answerArray[0]
+        answerArray[0] = tmp
+        task.first = answerArray[0]
+        task.second = answerArray[1]
+        task.answer = answerArray[2]
+        task.type = ComputingType.DIVISION
+        task.question = generateAnswerString(answerArray, ComputingType.DIVISION)
+        return task
+
+    }
 
     private fun generateAnswerString(answerArray: Array<Int>, type: ComputingType): String {
         return answerArray[0].toString() + " " + type.text + " " + answerArray[1].toString() + " = " + answerArray[2].toString()
@@ -81,17 +93,19 @@ enum class ComputingType constructor(val text: String) {
 class NumbersGenerator(private val level: Int) {
     private val random = Random()
 
-    fun getTaskType() = random.nextBoolean()
+    fun getTaskType() = random.nextInt(3)
 
-    fun getAdditionAnswer() = random.nextInt(90 + level * 10) + 1
+    fun getAdditionAnswer() = random.nextInt(90 + level * 10) + 2
 
-    fun getAdditionFirstNumber(answer: Int) = random.nextInt(answer - 1) + 1
+    fun getAdditionFirstNumber(answer: Int) = random.nextInt(answer) + 1
 
     fun isRightTask() = random.nextBoolean()
 
     fun generateAdditionWrong(vararg args: Int): Array<Int> {
         val position = random.nextInt(2)
-        args[position] = getNext(random, args[position], 10 + level)
+        while (checkAdditionRight(args[0], args[1], args[2])) {
+            args[position] = getNext(random, args[position], 10 + level)
+        }
         return arrayOf(args[0], args[1], args[2])
     }
 
@@ -99,10 +113,12 @@ class NumbersGenerator(private val level: Int) {
 
     fun generateMultiplicationWrong(vararg args: Int): Array<Int> {
         val position = random.nextInt(2)
-        if (position == 2)
-            args[position] = getNext(random, args[position], 2)
-        else
-            args[position] = getNext(random, args[position], 4 + level)
+        while (checkMultiplicationRight(args[0], args[1], args[2])) {
+            if (position == 2)
+                args[position] = getNext(random, args[position], 2)
+            else
+                args[position] = getNext(random, args[position], 4 + level)
+        }
         return arrayOf(args[0], args[1], args[2])
     }
 
@@ -117,5 +133,11 @@ class NumbersGenerator(private val level: Int) {
         return newValue
     }
 
+    private fun checkAdditionRight(vararg args: Int): Boolean {
+        return args[0] + args[1] == args[2]
+    }
 
+    private fun checkMultiplicationRight(vararg args: Int): Boolean {
+        return args[0] + args[1] == args[2]
+    }
 }
